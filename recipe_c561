@@ -1,7 +1,7 @@
 # Notes
 #
-# $ sudo su -
-# $ sudo singularity build casa561.simg recipe_c561_ds9
+# Build as
+# $ singularity build casa561.simg recipe_c561
 #
 Bootstrap: yum
 OSVersion: 7
