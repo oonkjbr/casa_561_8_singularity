@@ -1,0 +1,77 @@
+# Notes
+#
+# $ sudo su -
+# $ sudo singularity build casa561.simg recipe_c561_ds9
+#
+Bootstrap: yum
+OSVersion: 7
+MirrorURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/os/$basearch/
+Include: yum
+
+
+
+%environment
+    export INSTALLDIR=/opt/alma
+    . $INSTALLDIR/init.sh
+
+%post
+	# General environment settings.
+	export J=2
+	export INSTALLDIR=/opt/alma
+	export PYTHON_VERSION=2.7
+
+	yum -y remove iputils
+	yum -y update
+	yum -y install patch sudo yum-utils
+	yum -y install git svn wget
+	yum -y install automake-devel aclocal autoconf autotools cmake make
+	yum -y install g++ gcc gcc-c++ gcc-gfortran
+	yum -y install arpack-devel blas-devel boost boost-devel boost-python fftw3-devel fftw3-libs python-devel lapack-devel libpng-devel libxml2-devel numpy-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel
+	yum -y install bison flex ncurses tar bzip2 which gettext
+	yum -y install epel-release
+        yum -y install emacs
+        yum -y install gedit
+
+	#
+	# install-cfitsio
+	#
+	#mkdir -p ${INSTALLDIR}/cfitsio/build
+	#cd ${INSTALLDIR}/cfitsio && wget --retry-connrefused ftp://anonymous@heasarc.gsfc.nasa.gov/software/fitsio/c/cfitsio${CFITSIO_VERSION}.tar.gz
+	#cd ${INSTALLDIR}/cfitsio && tar xf cfitsio${CFITSIO_VERSION}.tar.gz
+	#cd ${INSTALLDIR}/cfitsio/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/cfitsio/ ../cfitsio
+	#cd ${INSTALLDIR}/cfitsio/build && make -j ${J}
+	#cd ${INSTALLDIR}/cfitsio/build && make install
+
+	#
+	# install-ds9
+	#
+	mkdir -p ${INSTALLDIR}/DS9
+	cd ${INSTALLDIR}/DS9 && wget http://ds9.si.edu/download/centos7/ds9.centos7.8.1.tar.gz
+	cd ${INSTALLDIR}/DS9 && tar -xzvf ds9.centos7.8.1.tar.gz
+
+	#
+	# install-casa 5.6.1-8 with pipeline ( https://casa.nrao.edu/casa_obtaining.shtml )
+	#
+	mkdir -p ${INSTALLDIR}/CASA_561_8_pipeline
+	cd ${INSTALLDIR}/CASA_561_8_pipeline && wget https://casa.nrao.edu/download/distro/casa-pipeline/release/el7/casa-pipeline-release-5.6.1-8.el7.tar.gz
+        ls -allh ${INSTALLDIR}/CASA_561_8_pipeline
+	cd ${INSTALLDIR}/CASA_561_8_pipeline && tar -xzvf casa-pipeline-release-5.6.1-8.el7.tar.gz
+        ls -allh ${INSTALLDIR}/CASA_561_8_pipeline
+
+	#
+	# init
+	#
+	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
+
+	echo "Installation directory contents:"
+	ls ${INSTALLDIR}
+
+    	yum -y clean all
+
+
+    #
+    # entrypoint
+    #
+%runscript
+    echo source $INSTALLDIR/init.sh >> $HOME/.bashrc
+. $INSTALLDIR/init.sh
