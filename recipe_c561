@@ -32,6 +32,11 @@ Include: yum
         yum -y install emacs
         yum -y install gedit
 
+        #
+	# cloning project into the image for provenance and reproducibility
+	mkdir -p ${INSTALLDIR}/RECIPE
+	cd ${INSTALLDIR}/RECIPE && git clone git://github.com/oonkjbr/casa_561_8_singularity.git
+
 	#
 	# install-cfitsio
 	#
